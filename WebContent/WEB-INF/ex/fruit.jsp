@@ -3,7 +3,7 @@
 <%@ page import = "ex.Fruit" %>
 <%
 	//スコープを取得
-	Fruit fruit = (Fruit)request.getAttribute("fruit");
+	Fruit fruit = (Fruit) session.getAttribute("fruit");
 %>
 
 <!DOCTYPE html>
