@@ -1,4 +1,4 @@
-package ex;
+package servlet;
 
 import java.io.IOException;
 
@@ -10,17 +10,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.SiteEV;
+import model.SiteEVLogic;
+
 /**
- * Servlet implementation class FruitServlet
+ * Servlet implementation class MinatoIndex
  */
-@WebServlet("/FruitServlet")
-public class FruitServlet extends HttpServlet {
+@WebServlet("/MinatoIndex")
+public class MinatoIndex extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public FruitServlet() {
+    public MinatoIndex() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -29,19 +32,33 @@ public class FruitServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		Fruit f = new Fruit("いちご", 800);
-		//アプリケーションスコープに保存するよう変更
+		//アプリケーションスコープを取得
 		ServletContext application = this.getServletContext();
-		application.setAttribute("fruit", f);
-		//セッションスコープに保存するよう変更
-		//HttpSession session = request.getSession();
-		//session.setAttribute("fruit", f);
-		//スコープにセット
-		//request.setAttribute("fruit", f);
+		SiteEV siteEV = (SiteEV) application.getAttribute("siteEV");
+		
+		//サイト初期化
+		if(siteEV == null) {
+			siteEV = new SiteEV();
+		}
+		
+		//リクエストパラメータの取得
+		request.setCharacterEncoding("UTF-8");
+		String action = request.getParameter("action");
+		
+		//サイトの評価処理
+		SiteEVLogic siteEVLogic = new SiteEVLogic();
+		if(action != null && action.equals("like")) {
+			siteEVLogic.like(siteEV);
+		}else if(action != null && action.equals("dislike")) {
+			siteEVLogic.dislike(siteEV);
+		}
+		
+		//アプリケーションスコープsiteEVに保存
+		application.setAttribute("siteEV", siteEV);
+		
 		//JSPにフォワード
-		RequestDispatcher d = request.getRequestDispatcher("/WEB-INF/ex/fruit.jsp");
-		d.forward(request, response);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/jsp/minatoIndex.jsp");
+		dispatcher.forward(request, response);
 	}
 
 	/**
